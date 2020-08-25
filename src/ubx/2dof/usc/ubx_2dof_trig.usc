@@ -1,0 +1,22 @@
+return bd.system
+{
+   imports = {
+      "stdtypes",
+      "ptrig",
+      "ubx_2dof",
+   },
+
+   blocks = {
+      { name="ubx_2dof_1", type="ubx_2dof" },
+      { name="trig1", type="ubx/ptrig" },
+   },
+
+    configurations = {
+        { name="trig1", config = { period = {sec=1, usec=0 },
+                                   sched_policy="SCHED_OTHER",
+                                   sched_priority=0,
+                                   chain0={
+                                     { b="#ubx_2dof_1", num_steps=1, measure=0 } } } }
+    },
+}
+

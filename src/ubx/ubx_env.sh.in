@@ -1,0 +1,1 @@
+export UBX_PATH=/usr:@CMAKE_CURRENT_BINARY_DIR@

@@ -1,0 +1,12 @@
+return bd.system
+{
+   imports = {
+      "stdtypes",
+      "ubx_2dof",
+   },
+
+   blocks = {
+      { name="ubx_2dof_1", type="ubx_2dof" },
+   },
+}
+
