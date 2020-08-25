@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(robif2b)
 
+option(ENABLE_KORTEX "Build Kinova Kortex interface" Off)
 option(ENABLE_UBX "Build UBX blocks" Off)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
