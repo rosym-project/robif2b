@@ -1,0 +1,2 @@
+add_executable(2dof_example 2dof_example.c)
+target_link_libraries(2dof_example robif2b_2dof)
