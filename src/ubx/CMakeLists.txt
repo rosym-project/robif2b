@@ -14,5 +14,9 @@ include_directories(
 
 add_subdirectory(2dof)
 
+if(ENABLE_KORTEX)
+  add_subdirectory(kortex)
+endif()
+
 
 configure_file(ubx_env.sh.in ${CMAKE_BINARY_DIR}/ubx_env.sh)

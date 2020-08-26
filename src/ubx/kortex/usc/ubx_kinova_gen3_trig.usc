@@ -1,0 +1,32 @@
+return bd.system
+{
+    imports = {
+        "stdtypes",
+        "ptrig",
+        "ubx_kinova_gen3",
+    },
+
+    blocks = {
+        { name="ubx_kinova_gen3_1", type="ubx_kinova_gen3" },
+        { name="trig1", type="ubx/ptrig" },
+    },
+
+    configurations = {
+        { name="ubx_kinova_gen3_1", config = {
+            ip_address="192.168.1.10",
+            port=10000,
+            port_real_time=10001,
+            user="admin",
+            password="admin",
+            session_timeout=60000,
+            connection_timeout=2000 }
+        },
+
+        { name="trig1", config = { period = {sec=0, usec=1000 },
+                                   sched_policy="SCHED_OTHER",
+                                   sched_priority=0,
+                                   chain0={
+                                     { b="#ubx_kinova_gen3_1", num_steps=1, measure=0 } } } }
+    },
+}
+
