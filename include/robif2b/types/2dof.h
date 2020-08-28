@@ -12,9 +12,9 @@ extern "C" {
 struct robif2b_2dof_nbx
 {
     // Ports
-    double *jnt_pos_msr;    // [rad] or [m]
-    double *jnt_vel_msr;    // [rad] or [m]
-    double *jnt_vel_cmd;    // [rad] or [m]
+    double *jnt_pos_msr;        // [rad] or [m]
+    double *jnt_vel_msr;        // [rad] or [m]
+    const double *jnt_vel_cmd;  // [rad] or [m]
 };
 
 #ifdef __cplusplus
