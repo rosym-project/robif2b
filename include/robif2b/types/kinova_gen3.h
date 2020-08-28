@@ -34,6 +34,7 @@ struct robif2b_kinova_gen3_nbx
     // Configuration
     struct robif2b_kinova_gen3_config conf;
     // Ports
+    const double *cycle_time;               // [s]
     enum robif2b_ctrl_mode *ctrl_mode;
     double *jnt_pos_msr;                    // [rad]
     double *jnt_vel_msr;                    // [rad/s]

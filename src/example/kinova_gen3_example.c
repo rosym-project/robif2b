@@ -9,6 +9,7 @@
 int main(int argc, char **argv)
 {
     bool success = false;
+    double cycle_time = 0.001;
     enum robif2b_ctrl_mode ctrl_mode = ROBIF2B_CTRL_MODE_FORCE;
     double pos_msr[] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
     double vel_msr[] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
@@ -32,6 +33,7 @@ int main(int argc, char **argv)
         .conf.connection_timeout = 2000,
 
         // Connections
+        .cycle_time = &cycle_time,
         .ctrl_mode = &ctrl_mode,
         .jnt_pos_msr = pos_msr,
         .jnt_vel_msr = vel_msr,

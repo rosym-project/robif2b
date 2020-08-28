@@ -208,6 +208,7 @@ void robif2b_kinova_gen3_update(struct robif2b_kinova_gen3_nbx *b)
     assert(b->ctrl_mode);
     assert(b->comm);
     assert(b->success);
+    assert(b->cycle_time);
 
     robif2b_kinova_gen3_comm *comm = b->comm;
 
@@ -260,7 +261,7 @@ void robif2b_kinova_gen3_update(struct robif2b_kinova_gen3_nbx *b)
 
             case ROBIF2B_CTRL_MODE_VELOCITY:
                 assert(b->jnt_vel_cmd);
-                pos += b->jnt_vel_cmd[i];
+                pos += b->jnt_vel_cmd[i] * (*b->cycle_time);
             break;
 
             case ROBIF2B_CTRL_MODE_FORCE:
