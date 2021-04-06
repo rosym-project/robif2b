@@ -3,7 +3,7 @@ add_library(robif2b_2dof SHARED 2dof.c)
 
 install(
   TARGETS robif2b_2dof
-  EXPORT robif2b_2dof-targets
+  EXPORT robif2b-targets
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib

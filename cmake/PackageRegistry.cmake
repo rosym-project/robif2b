@@ -59,9 +59,7 @@ function(REGISTER_PACKAGE)
   )
 
   # Install the export set for use with the install-tree
-  foreach(library ${REGISTER_PACKAGE_LIBRARIES})
-    install(EXPORT ${library}-targets
-      DESTINATION ${CMAKE_DIR}
-    )
-  endforeach()
+  install(EXPORT ${PROJECT_NAME}-targets
+    DESTINATION ${CMAKE_DIR}
+  )
 endfunction()
