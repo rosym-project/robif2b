@@ -145,6 +145,7 @@ void robif2b_kinova_gen3_shutdown(struct robif2b_kinova_gen3_nbx *b)
     delete comm->router_udp;
     delete comm->transport_tcp;
     delete comm->transport_udp;
+    delete comm;
 
     *b->success = true;
 }
