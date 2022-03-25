@@ -1,12 +1,20 @@
-add_library(robif2b_2dof SHARED 2dof.c)
+add_library(2dof SHARED 2dof.c)
 
-
-install(
-  TARGETS robif2b_2dof
-  EXPORT robif2b-targets
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
+target_include_directories(2dof
+  PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
-set(EXPORTED_LIBRARIES ${EXPORTED_LIBRARIES} robif2b_2dof PARENT_SCOPE)
+target_compile_options(2dof
+  PRIVATE
+    -Wall -Wextra -pedantic
+)
+
+install(
+  TARGETS 2dof
+  EXPORT ${PROJECT_NAME}-targets
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)

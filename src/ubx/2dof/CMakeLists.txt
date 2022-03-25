@@ -1,6 +1,6 @@
 add_library(ubx_2dof SHARED ubx_2dof.c)
 target_link_libraries(ubx_2dof
-  robif2b_2dof
+  2dof
   ${UBX_LIBRARIES}
 )
 
