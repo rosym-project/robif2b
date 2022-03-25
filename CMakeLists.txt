@@ -2,6 +2,7 @@ project(robif2b)
 cmake_minimum_required(VERSION 3.5)
 
 option(ENABLE_PACKAGE_REGISTRY "Add this package to CMake's package registry" Off)
+option(ENABLE_ETHERCAT "Build EtherCat interface" Off)
 option(ENABLE_KORTEX "Build Kinova Kortex interface" Off)
 option(ENABLE_UBX "Build UBX blocks" Off)
 
