@@ -7,3 +7,7 @@ endif()
 if(ENABLE_KORTEX)
   add_subdirectory(kortex)
 endif()
+
+if(ENABLE_KELO)
+  add_subdirectory(kelo)
+endif()
