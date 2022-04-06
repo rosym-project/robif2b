@@ -6,6 +6,7 @@ option(ENABLE_ETHERCAT "Build EtherCat interface" Off)
 option(ENABLE_KORTEX "Build Kinova Kortex interface" Off)
 option(ENABLE_KELO "Build Kelo interface" Off)
 option(ENABLE_UBX "Build UBX blocks" Off)
+option(ENABLE_DOC "Build documentation" Off)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
@@ -15,6 +16,20 @@ include(GNUInstallDirs)
 set(CMAKE_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 
 add_subdirectory(src)
+
+if(ENABLE_DOC)
+  find_package(Doxygen REQUIRED)
+
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in
+    ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+    @ONLY
+  )
+  add_custom_target(doc
+    ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Generating documentation with Doxygen" VERBATIM
+  )
+endif()
 
 
 # Export this package to CMake's package registry
