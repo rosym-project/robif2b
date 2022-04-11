@@ -6,6 +6,7 @@
 
 #include <robif2b/functions/ethercat.h>
 #include <robif2b/functions/kelo_drive.h>
+#include <robif2b/functions/kelo_power_board.h>
 
 
 static long timespec_to_usec(const struct timespec *t) {
@@ -16,7 +17,7 @@ static long timespec_to_usec(const struct timespec *t) {
 }
 
 #define NUM_DRIVES 2
-#define NUM_SLAVES 2
+#define NUM_SLAVES 3
 
 static struct {
     int num_drives;
@@ -27,8 +28,10 @@ static struct {
         long cycle_time_exp;      // [us]
     } time;
     struct {
-        struct robif2b_kelo_drive_api_msr_pdo msr_pdo[NUM_DRIVES];
-        struct robif2b_kelo_drive_api_cmd_pdo cmd_pdo[NUM_DRIVES];
+        struct robif2b_kelo_drive_api_msr_pdo drv_msr_pdo[NUM_DRIVES];
+        struct robif2b_kelo_drive_api_cmd_pdo drv_cmd_pdo[NUM_DRIVES];
+        struct robif2b_kelo_power_board_api_msr_pdo pb_msr_pdo;
+        struct robif2b_kelo_power_board_api_cmd_pdo pb_cmd_pdo;
     } ecat_comm;
     struct {
         const char   *ethernet_if;
@@ -50,6 +53,10 @@ static struct {
         double whl_vel[NUM_DRIVES * 2];
         double imu_ang_vel[NUM_DRIVES * 3];
         double imu_lin_acc[NUM_DRIVES * 3];
+        double bat_volt;
+        double bat_cur;
+        double bat_pwr;
+        int    bat_lvl;
     } kelo_msr;
     struct {
         enum robif2b_ctrl_mode ctrl_mode[NUM_DRIVES];
@@ -65,12 +72,13 @@ static struct {
 int main()
 {
     // Configuration
-    state.num_drives = NUM_DRIVES;
+    state.num_drives              = NUM_DRIVES;
     state.time.cycle_time_exp     = 1000;        // [us]
     state.ecat.ethernet_if        = "net0";
     state.ecat.num_exposed_slaves = NUM_SLAVES;
-    state.ecat.slave_idx[0]       = 3;
-    state.ecat.slave_idx[1]       = 5;
+    state.ecat.slave_idx[0]       = 1;
+    state.ecat.slave_idx[1]       = 3;
+    state.ecat.slave_idx[2]       = 5;
 
     for (int i = 0; i < NUM_DRIVES; i++) {
         state.kelo_cmd.ctrl_mode[i]                 = ROBIF2B_CTRL_MODE_FORCE,
@@ -80,11 +88,15 @@ int main()
         state.kelo_cmd.torque_to_current[i * 2 + 1] = 3.5714;   // [A/Nm]
     }
 
-    for (int i = 0; i < NUM_DRIVES; i++) {
+    state.ecat.name[0]        = "KELO_ROBILE";
+    state.ecat.prod_code[0]   = 0x02100101;
+    state.ecat.input_size[0]  = sizeof(state.ecat_comm.pb_msr_pdo);
+    state.ecat.output_size[0] = sizeof(state.ecat_comm.pb_cmd_pdo);
+    for (int i = 1; i < NUM_DRIVES + 1; i++) {
         state.ecat.name[i]        = "KELOD105";
         state.ecat.prod_code[i]   = 0x02001001;
-        state.ecat.input_size[i]  = sizeof(state.ecat_comm.msr_pdo[i]);
-        state.ecat.output_size[i] = sizeof(state.ecat_comm.cmd_pdo[i]);
+        state.ecat.input_size[i]  = sizeof(state.ecat_comm.drv_msr_pdo[i - 1]);
+        state.ecat.output_size[i] = sizeof(state.ecat_comm.drv_cmd_pdo[i - 1]);
     }
 
 
@@ -102,18 +114,20 @@ int main()
         .num_current_slaves = &state.ecat.num_active_slaves,
         .is_connected       = &state.ecat.is_connected[0],
         .input = (void *[NUM_SLAVES]) {
-            &state.ecat_comm.msr_pdo[0],
-            &state.ecat_comm.msr_pdo[1]
+            &state.ecat_comm.pb_msr_pdo,
+            &state.ecat_comm.drv_msr_pdo[0],
+            &state.ecat_comm.drv_msr_pdo[1]
         },
         .output = (const void *[NUM_SLAVES]) {
-            &state.ecat_comm.cmd_pdo[0],
-            &state.ecat_comm.cmd_pdo[1]
+            &state.ecat_comm.pb_cmd_pdo,
+            &state.ecat_comm.drv_cmd_pdo[0],
+            &state.ecat_comm.drv_cmd_pdo[1]
         }
     };
 
     struct robif2b_kelo_drive_encoder drive_enc = {
         .num_drives    = &state.num_drives,
-        .msr_pdo       = &state.ecat_comm.msr_pdo[0],
+        .msr_pdo       = &state.ecat_comm.drv_msr_pdo[0],
         .wheel_pos_msr = &state.kelo_msr.whl_pos[0],
         .wheel_vel_msr = &state.kelo_msr.whl_vel[0],
         .pivot_pos_msr = &state.kelo_msr.pvt_pos[0],
@@ -122,20 +136,29 @@ int main()
 
     struct robif2b_kelo_drive_imu imu = {
         .num_drives      = &state.num_drives,
-        .msr_pdo         = &state.ecat_comm.msr_pdo[0],
+        .msr_pdo         = &state.ecat_comm.drv_msr_pdo[0],
         .imu_ang_vel_msr = &state.kelo_msr.imu_ang_vel[0],
         .imu_lin_acc_msr = &state.kelo_msr.imu_lin_acc[0]
     };
 
     struct robif2b_kelo_drive_actuator wheel_act = {
         .num_drives  = &state.num_drives,
-        .cmd_pdo     = &state.ecat_comm.cmd_pdo[0],
+        .cmd_pdo     = &state.ecat_comm.drv_cmd_pdo[0],
         .ctrl_mode   = &state.kelo_cmd.ctrl_mode[0],
         .act_vel_cmd = &state.kelo_cmd.vel[0],
         .act_trq_cmd = &state.kelo_cmd.trq[0],
         .act_cur_cmd = &state.kelo_cmd.cur[0],
         .max_current = &state.kelo_cmd.max_current[0],
         .trq_to_cur  = &state.kelo_cmd.torque_to_current[0]
+    };
+
+    struct robif2b_kelo_power_board power_board = {
+        .msr_pdo     = &state.ecat_comm.pb_msr_pdo,
+        .cmd_pdo     = &state.ecat_comm.pb_cmd_pdo,
+        .soc_msr     = &state.kelo_msr.bat_lvl,
+        .voltage_msr = &state.kelo_msr.bat_volt,
+        .current_msr = &state.kelo_msr.bat_cur,
+        .power_msr   = &state.kelo_msr.bat_pwr
     };
 
 
@@ -155,15 +178,24 @@ int main()
         robif2b_kelo_drive_encoder_update(&drive_enc);
         robif2b_kelo_drive_imu_update(&imu);
         robif2b_kelo_drive_actuator_update(&wheel_act);
+        robif2b_kelo_power_board_update(&power_board);
 
         for (int i = 0; i < NUM_DRIVES; i++) {
             printf("drive [id=%i, conn=%i]: "
                     "w_vel[0]=%5.2f - w_vel[1]=%5.2f - p_pos=%5.2f\n",
-                    i, state.ecat.is_connected[i],
+                    i, state.ecat.is_connected[i + 1],
                     state.kelo_msr.whl_vel[i * 2 + 0],
                     state.kelo_msr.whl_vel[i * 2 + 1],
                     state.kelo_msr.pvt_pos[i]);
         }
+
+        printf("power board conn=%i: "
+               "b_volt=%5.2f - b_cur[1]=%5.2f - b_pwr=%5.2f - b_lvl=%5.2i\n",
+                state.ecat.is_connected[0],
+                state.kelo_msr.bat_volt,
+                state.kelo_msr.bat_cur,
+                state.kelo_msr.bat_pwr,
+                state.kelo_msr.bat_lvl);
         printf("\n");
 
 
