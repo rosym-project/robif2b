@@ -65,7 +65,7 @@ static struct {
         double trq[NUM_DRIVES * 2];
         double cur[NUM_DRIVES * 2];
         double max_current[NUM_DRIVES * 2];
-        double torque_to_current[NUM_DRIVES * 2];
+        double trq_const[NUM_DRIVES * 2];
     } kelo_cmd;
 } state;
 
@@ -82,11 +82,11 @@ int main()
     state.ecat.slave_idx[2]       = 5;
 
     for (int i = 0; i < NUM_DRIVES; i++) {
-        state.kelo_cmd.ctrl_mode[i]                 = ROBIF2B_CTRL_MODE_FORCE,
-        state.kelo_cmd.max_current[i * 2 + 0]       = 10;       // [A]
-        state.kelo_cmd.max_current[i * 2 + 1]       = 10;       // [A]
-        state.kelo_cmd.torque_to_current[i * 2 + 0] = 3.5714;   // [A/Nm]
-        state.kelo_cmd.torque_to_current[i * 2 + 1] = 3.5714;   // [A/Nm]
+        state.kelo_cmd.ctrl_mode[i]           = ROBIF2B_CTRL_MODE_FORCE,
+        state.kelo_cmd.max_current[i * 2 + 0] = 10;     // [A]
+        state.kelo_cmd.max_current[i * 2 + 1] = 10;     // [A]
+        state.kelo_cmd.trq_const[i * 2 + 0]   = 0.29;   // [Nm/A]
+        state.kelo_cmd.trq_const[i * 2 + 1]   = 0.29;   // [Nm/A]
     }
     state.kelo_msr.pvt_off[0] = 1.523339;
     state.kelo_msr.pvt_off[1] = 2.399158;
@@ -153,7 +153,7 @@ int main()
         .act_trq_cmd = &state.kelo_cmd.trq[0],
         .act_cur_cmd = &state.kelo_cmd.cur[0],
         .max_current = &state.kelo_cmd.max_current[0],
-        .trq_to_cur  = &state.kelo_cmd.torque_to_current[0]
+        .trq_const   = &state.kelo_cmd.trq_const[0]
     };
 
     struct robif2b_kelo_power_board power_board = {

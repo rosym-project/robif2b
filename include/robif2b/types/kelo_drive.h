@@ -190,10 +190,16 @@ struct robif2b_kelo_drive_actuator
     const double *max_current;
 
     /**
-     * The motor torque constant of each actuator represented in [A/Nm].
+     * The motor torque constant of each actuator represented in [Nm/A].
      * Pointer to an array of size 2 * @ref num_drives.
+     *
+     * The Kelo drives expose
+     * (i)  the Flux linkage (\Phi, measured in [Wb]); and
+     * (ii) number of pole pairs (N/2; half because of the _pairs_)
+     * via the motor parameters PDO. Given those quantities, the motor torque
+     * constant (K_T) follows as K_T = N \Phi.
      */
-    const double *trq_to_cur;
+    const double *trq_const;
 };
 
 #ifdef __cplusplus

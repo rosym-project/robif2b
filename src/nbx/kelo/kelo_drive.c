@@ -78,7 +78,7 @@ void robif2b_kelo_drive_actuator_update(struct robif2b_kelo_drive_actuator *b)
 
             case ROBIF2B_CTRL_MODE_FORCE:
                 assert(b->act_trq_cmd);
-                assert(b->trq_to_cur);
+                assert(b->trq_const);
 
                 // Note: the mode is called torque mode, but it is actually
                 //       current control!
@@ -86,9 +86,9 @@ void robif2b_kelo_drive_actuator_update(struct robif2b_kelo_drive_actuator *b)
                                        | COM1_MODE_TORQUE;
 
                 b->cmd_pdo[i].setpoint1 = b->act_trq_cmd[i * 2 + 0]
-                                          / b->trq_to_cur[i * 2 + 0];
+                                          / b->trq_const[i * 2 + 0];
                 b->cmd_pdo[i].setpoint2 = b->act_trq_cmd[i * 2 + 1]
-                                          / b->trq_to_cur[i * 2 + 1];
+                                          / b->trq_const[i * 2 + 1];
                 b->cmd_pdo[i].limit1_p  = 0.0; // Controller does not seem to
                 b->cmd_pdo[i].limit1_n  = 0.0; // use those limits in torque
                 b->cmd_pdo[i].limit2_p  = 0.0; // control mode
