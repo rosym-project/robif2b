@@ -58,6 +58,13 @@ struct robif2b_kelo_drive_encoder
     double *wheel_vel_msr;
 
     /**
+     * Calibration offset of the pivot joint in [rad]. This calibration offset
+     * will be subtracted from the sensor measurements (i.e. sens - off).
+     * Pointer to an array of size @ref num_drives.
+     */
+    const double *pivot_pos_off;
+
+    /**
      * Pivot position measurements in [rad].
      * Pointer to an array of size @ref num_drives.
      */

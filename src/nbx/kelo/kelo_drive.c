@@ -24,6 +24,7 @@ void robif2b_kelo_drive_encoder_update(struct robif2b_kelo_drive_encoder *b)
         }
         if (b->pivot_pos_msr) {
             b->pivot_pos_msr[i] = b->msr_pdo[i].encoder_pivot;
+            if (b->pivot_pos_off) b->pivot_pos_msr[i] -= b->pivot_pos_off[i];
         }
         if (b->pivot_vel_msr) {
             b->pivot_vel_msr[i] = b->msr_pdo[i].velocity_pivot;
