@@ -47,6 +47,7 @@ static struct {
         bool         is_connected[NUM_SLAVES];
     } ecat;
     struct {
+        double pvt_off[NUM_DRIVES];
         double pvt_pos[NUM_DRIVES];
         double pvt_vel[NUM_DRIVES];
         double whl_pos[NUM_DRIVES * 2];
@@ -87,6 +88,8 @@ int main()
         state.kelo_cmd.torque_to_current[i * 2 + 0] = 3.5714;   // [A/Nm]
         state.kelo_cmd.torque_to_current[i * 2 + 1] = 3.5714;   // [A/Nm]
     }
+    state.kelo_msr.pvt_off[0] = 1.523339;
+    state.kelo_msr.pvt_off[1] = 2.399158;
 
     state.ecat.name[0]        = "KELO_ROBILE";
     state.ecat.prod_code[0]   = 0x02100101;
@@ -131,7 +134,8 @@ int main()
         .wheel_pos_msr = &state.kelo_msr.whl_pos[0],
         .wheel_vel_msr = &state.kelo_msr.whl_vel[0],
         .pivot_pos_msr = &state.kelo_msr.pvt_pos[0],
-        .pivot_vel_msr = &state.kelo_msr.pvt_vel[0]
+        .pivot_vel_msr = &state.kelo_msr.pvt_vel[0],
+        .pivot_pos_off = &state.kelo_msr.pvt_off[0]
     };
 
     struct robif2b_kelo_drive_imu imu = {
