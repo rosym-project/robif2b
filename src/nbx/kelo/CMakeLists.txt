@@ -9,6 +9,11 @@ target_include_directories(kelo
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
+target_link_libraries(kelo
+  PRIVATE
+    m
+)
+
 target_compile_options(kelo
   PRIVATE
     -Wall -Wextra -pedantic
