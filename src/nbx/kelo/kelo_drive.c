@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include <assert.h>
+#include <math.h>
 
 #include <robif2b/types/control_mode.h>
 
