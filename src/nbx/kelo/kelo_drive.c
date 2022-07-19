@@ -29,7 +29,10 @@ void robif2b_kelo_drive_encoder_update(struct robif2b_kelo_drive_encoder *b)
         }
         if (b->pivot_pos_msr) {
             b->pivot_pos_msr[i] = b->msr_pdo[i].encoder_pivot;
-            if (b->pivot_pos_off) b->pivot_pos_msr[i] = floored_mod(b->pivot_pos_msr[i] - b->pivot_pos_off[i], 2 * M_PI);
+            if (b->pivot_pos_off) {
+                double msr_off = b->pivot_pos_msr[i] - b->pivot_pos_off[i];
+                b->pivot_pos_msr[i] = floored_mod(msr_off, 2 * M_PI);
+            }
         }
         if (b->pivot_vel_msr) {
             b->pivot_vel_msr[i] = b->msr_pdo[i].velocity_pivot;
