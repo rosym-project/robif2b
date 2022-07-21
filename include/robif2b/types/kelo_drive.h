@@ -2,8 +2,6 @@
 #ifndef ROBIF2B_TYPES_KELO_DRIVE_H
 #define ROBIF2B_TYPES_KELO_DRIVE_H
 
-#include <stdlib.h>
-
 #include <robif2b/types/control_mode.h>
 #include <robif2b/types/kelo_drive_api.h>
 
